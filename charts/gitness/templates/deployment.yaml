@@ -49,10 +49,18 @@ spec:
           env:
             - name: DOCKER_HOST
               value: tcp://localhost:2375
+            {{- if .Values.env }}
             {{- range $key, $value := $.Values.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            {{- end }}
+          {{- if .Values.envFromExistingSecret }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.envFromExistingSecret }}
+          {{- end }}
+            
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
         {{- if .Values.dind.enabled }}
